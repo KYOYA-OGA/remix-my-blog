@@ -43,29 +43,57 @@ export const action: ActionFunction = async ({ request }) => {
   const sendToName = process.env.SIB_SEND_TO_NAME;
 
   if (!myApiKey || !senderEmail || !senderName || !sendToName || !sendToEmail) {
-    throw new Error('something went wrong');
+    return {
+      ok: false,
+      errors: {},
+      message: '送信に失敗しました。もう一度お試しください。',
+    };
   }
 
   SibApiV3Sdk.ApiClient.instance.authentications['api-key'].apiKey = myApiKey;
 
-  new SibApiV3Sdk.TransactionalEmailsApi()
-    .sendTransacEmail({
-      subject: 'サイトからお問い合わせがありました',
-      sender: { email: senderEmail, name: senderName },
-      replyTo: { email: email, name: name },
-      to: [{ name: sendToName, email: sendToEmail }],
-      textContent: message,
-    })
-    .then(
-      function (data: any) {
-        return { ok: true };
-      },
-      function (error: any) {
-        return { ok: false };
-      }
-    );
+  let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+  let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+  sendSmtpEmail.subject = 'サイトからお問い合わせがありました';
+  sendSmtpEmail.textContent = message;
+  sendSmtpEmail.sender = { email: senderEmail, name: senderName };
+  sendSmtpEmail.to = [{ name: sendToName, email: sendToEmail }];
+  sendSmtpEmail.replyTo = { email: email, name: name };
+  // sendSmtpEmail.headers = { 'Some-Custom-Name': 'unique-id-1234' };
+
+  // const response = new SibApiV3Sdk.TransactionalEmailsApi().sendTransacEmail({
+  //   subject: 'サイトからお問い合わせがありました',
+  //   sender: { email: senderEmail, name: senderName },
+  //   replyTo: { email: email, name: name },
+  //   to: [{ name: sendToName, email: sendToEmail }],
+  //   textContent: message,
+  // });
+
+  const response = await apiInstance.sendTransacEmail(sendSmtpEmail).then(
+    function (data: any) {
+      console.log(
+        'API called successfully. Returned data: ' + JSON.stringify(data)
+      );
+    },
+    function (error: any) {
+      console.error(error);
+      return error;
+    }
+  );
+
+  if (response?.status === 401) {
+    return {
+      ok: false,
+      errors: {},
+      message: '送信に失敗しました。もう一度お試しください。',
+    };
+  }
+
   return {
     ok: true,
+    message: '無事送信されました！ありがとうございました。',
     errors: {},
   };
 };
@@ -176,13 +204,15 @@ const Contact = () => {
                 </button>
               </div>
 
-              {actionData?.ok && (
-                <p className="my-5 text-center text-success">
-                  ありがとうございます。
-                  <br />
-                  無事送信されました！
-                </p>
-              )}
+              <div className="my-5 text-center">
+                {actionData?.ok && actionData?.message && (
+                  <p className="text-success">{actionData?.message}</p>
+                )}
+
+                {!actionData?.ok && actionData?.message && (
+                  <p className="text-red-600">{actionData?.message}</p>
+                )}
+              </div>
             </fieldset>
           </Form>
         </section>

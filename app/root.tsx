@@ -8,7 +8,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
 } from '@remix-run/react';
 
 export const meta: MetaFunction = () => ({
@@ -37,16 +36,4 @@ export default function App() {
       </body>
     </html>
   );
-}
-
-export function CatchBoundary() {
-  const caught = useCatch();
-  if (caught.status === 404) {
-    return <div>Not Found</div>;
-  }
-  throw new Error(`Unexpected error: ${caught.status}`);
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <div>{error.message}</div>;
 }
