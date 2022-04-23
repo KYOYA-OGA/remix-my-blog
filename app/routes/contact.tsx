@@ -1,6 +1,6 @@
 import { Form, useActionData, useTransition } from '@remix-run/react';
 import Layout from '~/components/Layout';
-import Container from '~/components/container';
+import Container from '~/components/Container';
 import SibApiV3Sdk from '~/lib/mailer';
 
 import type { ActionFunction, MetaFunction } from '@remix-run/node';
