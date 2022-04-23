@@ -4,7 +4,7 @@ import Layout from '~/components/Layout';
 import { client } from '~/lib/client.server';
 import type { Content } from '~/types';
 import PostGrid from '~/components/posts/PostGrid';
-import Container from '~/components/container';
+import Container from '~/components/Container';
 
 // stale-while-revalidateの設定
 export const headers: HeadersFunction = () => {

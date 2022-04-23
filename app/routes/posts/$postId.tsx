@@ -11,7 +11,7 @@ import { Link, useLoaderData } from '@remix-run/react';
 import Layout from '~/components/Layout';
 import Button from '~/components/Button';
 import { format } from 'date-fns';
-import Container from '~/components/container';
+import Container from '~/components/Container';
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
   const cacheControl =
